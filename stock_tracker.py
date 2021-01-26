@@ -3,10 +3,6 @@ from bs4 import BeautifulSoup
 import re
 import datetime
 
-#Ideas:
-#-Stoploss
-#-send email alert
-
 def url_constructor(stock):
     """Creates an URL for the required stock to access the Yahooo Finance website."""
 
