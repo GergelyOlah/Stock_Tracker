@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import datetime
+from datetime import datetime
 
 def url_constructor(stock):
     """Creates an URL for the required stock to access the Yahooo Finance website."""
@@ -42,6 +42,25 @@ def prices(url):
         return None
 
 
+def top_news(url):
+    """Retrieves the latest news relevant to a particular stock. """
+    
+    response = requests.get(url)
+    top_news = list()
+    website = "https://finance.yahoo.com"
+
+    try:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        news_block = soup.find_all("li", {"class": "js-stream-content Pos(r)"})
+        summary = news_block[0].a.text
+        link = website + news_block[0].a["href"]
+        top_news.append(summary)
+        top_news.append(link)
+        return top_news
+    except:
+        return None
+
+
 def stock_query():
     """Interactice command line tool that retrieves price info of selected stocks."""
 
@@ -66,36 +85,21 @@ def stock_query():
     print("The daily change is {}%.".format(daily_change))
 
 
-def top_news(url):
-    """Retrieves the latest news relevant to a particular stock. """
-    
-    response = requests.get(url)
-    top_news = list()
-    website = "https://finance.yahoo.com"
-
-    try:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        news_block = soup.find_all("li", {"class": "js-stream-content Pos(r)"})
-        summary = news_block[0].a.text
-        link = website + news_block[0].a["href"]
-        top_news.append(summary)
-        top_news.append(link)
-        return top_news
-    except:
-        return None
-
 def tracker(stock_list):
     """Tracks the price of predefined stocks."""
 
+    date = datetime.now()
+    date_string = date.strftime("%Y.%m.%d")
     stock_data = list()
 
     for stock in stock_list:
         url = url_constructor(stock)
         price = prices(url)
         news = top_news(url)
-        stock_data.append([price, news])
+        stock_data.append([price, date_string, news])
 
     with open("stock_database.txt", "w") as f:
+        
         for entry in stock_data:
             f.write(str(entry))
             f.write("\n")
@@ -105,4 +109,4 @@ stock_list = ["^GSPC", "TSLA", "BRK-B", "BTC-USD", "ETH-USD", "VUTY.L", "0P0000T
 tracker(stock_list)
 
 #if __name__ == "__main__":
-#    stock_query()
+   # stock_query()
