@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from datetime import datetime
+import csv
+import os
 
 def url_constructor(stock):
     """Creates an URL for the required stock to access the Yahooo Finance website."""
@@ -58,11 +60,11 @@ def top_news(url):
         top_news.append(link)
         return top_news
     except:
-        return None
+        return [None, None]
 
 
 def stock_query():
-    """Interactice command line tool that retrieves price info of selected stocks."""
+    """Interactive command line tool that retrieves price info of selected stocks."""
 
     stock = str(input("""Which stock are you interested in? Type the ticker of the stock or choose from the most popular ones:
     -Tesla [TSLA]
@@ -90,22 +92,26 @@ def tracker(stock_list):
 
     date = datetime.now()
     date_string = date.strftime("%Y.%m.%d")
-    stock_data = list()
 
-    for stock in stock_list:
-        url = url_constructor(stock)
-        price = prices(url)
-        news = top_news(url)
-        stock_data.append([price, date_string, news])
-
-    with open("stock_database.txt", "w") as f:
+    with open("stock_database.csv", "a", newline="") as f_csv:
         
-        for entry in stock_data:
-            f.write(str(entry))
-            f.write("\n")
+        csv_writer = csv.writer(f_csv)
 
+        if os.stat("stock_database.csv").st_size == 0:
+            header = ["Ticker", "Price", "Previous Close", "Currency", "Daily Change", "Date", "News headline", "News link"]
+            csv_writer.writerow(header)
+
+        for stock in stock_list:
+            url = url_constructor(stock)
+            stock_data = prices(url)
+            news = top_news(url)
+            stock_data.append(date_string)
+            stock_data.append(news[0])
+            stock_data.append(news[1])
+            csv_writer.writerow(stock_data)
 
 stock_list = ["^GSPC", "TSLA", "BRK-B", "BTC-USD", "ETH-USD", "VUTY.L", "0P0000TKZK.L", "0P0000TKZI.L", "0P0000TKZH.L"]
+#stock_list = ["^GSPC", "TSLA"]
 tracker(stock_list)
 
 #if __name__ == "__main__":

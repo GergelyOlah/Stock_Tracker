@@ -1,8 +1,8 @@
 # Stock Tracker
 ## stock_query() function
 
-Interactice command line tool that retrieves price info of stocks.
+Interactive command line tool that retrieves price info of the selected stock.
 
 ## stock_tracker() function
 
-Retrieves price info of given stocks and stores them in a database.
+Retrieves price info and related news articles of given stocks and stores them in a database.
