@@ -27,8 +27,6 @@ def main():
     print("The current price of {} is {} {}.".format(stock, price_current, currency))
     print("It closed with a value of {} {}".format(price_prev_close, currency))
     print("The daily change is {}%.".format(daily_change))
-    print("What is the stop loss value do you want to set up?")
-
 
 def url_constructor(stock):
     """Creates an URL for the required stock."""
