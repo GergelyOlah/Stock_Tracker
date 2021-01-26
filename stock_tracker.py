@@ -1,23 +1,34 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 #Ideas:
 #-Stoploss
-#-Daily change
-#-Search stock
 #-send email alert
 
 def main():
+    """Retrieves price info of selected stocks."""
+
     stock = str(input("""Which stock are you interested in? Type the ticker of the stock or choose from the most popular ones:
     -Tesla [TSLA]
-    -Berkshire Hathaway [BRK-B]\n
+    -Berkshire Hathaway [BRK-B]
+    -Bitcoin [BTC-USD]\n
     Ticker: """))
-
     url = url_constructor(stock)
-    print("The current price of {} is {}.".format(stock, prices(url)[0]))
-    print("It closed with a value of {}".format(prices(url)[1]))
-    print("The daily change is %.")
+    
+    if prices(url) == None:
+        return print("Website cannot be accessed. Please check if the stock exists and you typed the ticker correctly.") 
+
+    price_current = prices(url)[0]
+    price_prev_close = prices(url)[1]
+    currency = prices(url)[2]
+    daily_change = round(100*(float(price_current.replace(",",""))-float(price_prev_close.replace(",","")))/float(price_prev_close.replace(",","")), 2)
+    
+    print("The current price of {} is {} {}.".format(stock, price_current, currency))
+    print("It closed with a value of {} {}".format(price_prev_close, currency))
+    print("The daily change is {}%.".format(daily_change))
     print("What is the stop loss value do you want to set up?")
+
 
 def url_constructor(stock):
     """Creates an URL for the required stock."""
@@ -35,16 +46,19 @@ def prices(url):
     prices = []
 
     try:
-        price_current = soup.find("span", {"class":"Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)"}).text + " USD"
+        price_current = soup.find("span", {"class":"Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)"}).text
         prices.append(price_current)
 
-        price_prev_close = soup.find("td", {"data-test":"PREV_CLOSE-value"}).find("span").text + " USD"
+        price_prev_close = soup.find("td", {"data-test":"PREV_CLOSE-value"}).span.text
         prices.append(price_prev_close)
 
-    except:
-        print("Website cannot be accessed. Please check if the stock exists and you typed the ticker correctly.")
+        currency_info = soup.find("div", {"id":"quote-header-info"}).find("div", {"data-reactid":"8"}).span.text
+        currency = re.search(r"Currency in (.*)", currency_info)[1]
+        prices.append(currency)
+        return prices
 
-    return prices
+    except:
+        return None
 
 
 if __name__ == "__main__":
