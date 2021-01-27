@@ -93,7 +93,7 @@ def tracker(stock_list):
     date = datetime.now()
     date_string = date.strftime("%Y.%m.%d")
 
-    with open("stock_database.csv", "a", newline="") as f_csv:
+    with open("stock_database.csv", "w", newline="") as f_csv:
         
         csv_writer = csv.writer(f_csv)
 
