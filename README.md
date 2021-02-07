@@ -7,14 +7,14 @@ The app has two main functionalities. First, it helps to find out the current pr
 
 
 ### 1. functon:
-Interactive command line tool that retrieves price info of the selected stock.
+Interactive command line tool that retrieves price info of the selected stock. Run the the below command with with _Python Version 3.0+_:
 ```
-    python -m stock_query(<stock-ticker>)
+    python -m stock_tracker.stock_query(<stock-ticker>)
 ``` 
 
 ### 2. function:
-Retrieves price info and related news articles of given stocks and stores them in a database.
+Retrieves price info and related news articles of given stocks and stores them in a database. Run the the below command with with _Python Version 3.0+_:
 ```
-    python -m stock_tracker()
+    python -m stock_tracker.stock_tracker()
 ``` 
 
